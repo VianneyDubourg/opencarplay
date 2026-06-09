@@ -1,44 +1,42 @@
-name: Déploiement FTP
+name: Déploiement GitHub Pages
 
 on:
   push:
     branches:
       - main
 
+# Permissions nécessaires pour GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    name: Déployer via FTP
+    name: Déployer sur GitHub Pages
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Récupérer le code source
+      - name: Récupérer le code
         uses: actions/checkout@v4
+
+      - name: Configurer GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Envoyer les fichiers
+        uses: actions/upload-pages-artifact@v3
         with:
-          # Récupérer tout l'historique pour les déploiements différentiels
-          fetch-depth: 2
+          # Déployer tout le repo (site 100% statique)
+          path: "."
 
-      - name: Déployer via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          # ── Serveur FTP ──────────────────────────────────────────────────
-          # Configurez ces secrets dans :
-          # Settings > Secrets and variables > Actions
-          server:   ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-
-          # Répertoire de destination sur le serveur FTP
-          server-dir: /public_html/
-
-          # Protocole (ftps = FTP avec TLS, recommandé)
-          protocol: ftps
-
-          # ── Exclusions ───────────────────────────────────────────────────
-          # Fichiers à NE PAS envoyer sur le serveur
-          exclude: |
-            **/.git/**
-            **/.github/**
-            **/node_modules/**
-            README.md
-            .gitignore
-            **/*.log
+      - name: Déployer
+        id: deployment
+        uses: actions/deploy-pages@v4
