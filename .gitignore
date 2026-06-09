@@ -1,0 +1,22 @@
+# Dépendances (aucune dans ce projet statique)
+node_modules/
+
+# Éditeurs
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Logs
+*.log
+
+# Fichiers de secrets — NE JAMAIS COMMITTER
+.env
+.env.local
+secrets.js
+
+# GitHub Actions artifacts
+.github/workflows/*.log

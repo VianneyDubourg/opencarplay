@@ -1,0 +1,252 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   sidebar.css — Dock vertical gauche (style CarPlay)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+#sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 12px 0 16px;
+  gap: 0;
+  position: relative;
+  z-index: 100;
+
+  /* Verre dépoli */
+  background: rgba(14, 14, 18, 0.80);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Barre de statut (haut) ───────────────────────────────────────────────── */
+#status-bar {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+}
+
+#status-time {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+#status-date {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#status-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.status-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.status-icon svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.2;
+}
+
+/* ── Indicateur signal (3 barres) ────────────────────────────────────────── */
+#signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+}
+
+.signal-bar {
+  width: 3px;
+  border-radius: 1px;
+  background: var(--text-secondary);
+  transition: background var(--transition-fast);
+}
+
+.signal-bar:nth-child(1) { height: 4px; }
+.signal-bar:nth-child(2) { height: 7px; }
+.signal-bar:nth-child(3) { height: 10px; }
+.signal-bar:nth-child(4) { height: 14px; }
+
+/* ── Icônes d'apps (squircles) ────────────────────────────────────────────── */
+#app-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0 12px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+#app-list::-webkit-scrollbar { display: none; }
+
+.app-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  width: 100%;
+  padding: 0 2px;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  border: none;
+  background: none;
+  transition: transform var(--transition-fast);
+}
+
+.app-icon:active {
+  transform: scale(0.91);
+}
+
+.squircle {
+  width: 62px;
+  height: 62px;
+  border-radius: var(--squircle-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast), filter var(--transition-fast);
+}
+
+/* Reflet lumineux subtil en haut */
+.squircle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.04) 40%,
+    transparent 70%
+  );
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.squircle svg {
+  width: 28px;
+  height: 28px;
+  stroke: #fff;
+  stroke-width: 1.8;
+  fill: none;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.4));
+}
+
+.app-icon:hover .squircle {
+  filter: brightness(1.12);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.app-icon.active .squircle {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.30), 0 6px 24px rgba(0,0,0,0.5);
+}
+
+.app-icon-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: center;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.app-icon.active .app-icon-label {
+  color: var(--text-primary);
+}
+
+/* Couleurs par app */
+.squircle[data-app="maps"]    { background: linear-gradient(145deg, #34c759, #2eac4e); }
+.squircle[data-app="music"]   { background: linear-gradient(145deg, #1db954, #158a3e); }
+.squircle[data-app="about"]   { background: linear-gradient(145deg, #5e5ce6, #4543c0); }
+
+/* ── Séparateur ──────────────────────────────────────────────────────────── */
+.sidebar-divider {
+  width: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 4px 0;
+  flex-shrink: 0;
+}
+
+/* ── Bouton contrôles bas (fullscreen, accueil) ────────────────────────────── */
+#sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sidebar-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.sidebar-btn:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: var(--text-primary);
+}
+
+.sidebar-btn:active {
+  transform: scale(0.90);
+}
+
+/* Bouton accueil (carré arrondi, plus grand) */
+#btn-home {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.09);
+  color: var(--text-primary);
+}
+
+#btn-home svg {
+  width: 24px;
+  height: 24px;
+}

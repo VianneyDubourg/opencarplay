@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0d0d0f" />
+  <title>AutoDeck</title>
+
+  <!-- Feather Icons (Cole Bemis, MIT) — https://feathericons.com -->
+  <script src="https://unpkg.com/feather-icons@4.29.2/dist/feather.min.js"></script>
+
+  <!-- Styles modulaires -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/apps.css" />
+</head>
+<body>
+
+<!-- ── Overlay de chargement ──────────────────────────────────────────────── -->
+<div id="loading-overlay" role="status" aria-label="Chargement">
+  <div class="loader-content">
+    <div class="loader-logo">
+      <i data-feather="navigation"></i>
+    </div>
+    <span class="loader-name" data-product-name>AutoDeck</span>
+    <div class="loader-spinner"></div>
+  </div>
+</div>
+
+<!-- ── Application principale ─────────────────────────────────────────────── -->
+<div id="app">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SIDEBAR / DOCK GAUCHE
+  ══════════════════════════════════════════════════════════════════════ -->
+  <nav id="sidebar" role="navigation" aria-label="Navigation principale">
+
+    <!-- Barre de statut -->
+    <div id="status-bar" role="status" aria-live="polite" aria-label="Statut">
+      <div id="status-time" aria-label="Heure">00:00</div>
+      <div id="status-date" aria-label="Date">Lun. 1 jan.</div>
+      <div id="status-icons">
+        <!-- Barres de signal simulées -->
+        <div id="signal-bars" title="Signal" aria-hidden="true">
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+          <div class="signal-bar"></div>
+        </div>
+        <!-- Batterie -->
+        <div class="status-icon" title="Batterie" aria-hidden="true">
+          <i data-feather="battery-charging"></i>
+        </div>
+        <!-- Wifi -->
+        <div class="status-icon" title="Wi-Fi" aria-hidden="true">
+          <i data-feather="wifi"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des applications -->
+    <div id="app-list" role="list">
+
+      <!-- App : Plans (Maps) -->
+      <button class="app-icon" data-view="maps" role="listitem"
+              aria-label="Ouvrir la carte" title="Carte">
+        <div class="squircle" data-app="maps">
+          <i data-feather="map-pin"></i>
+        </div>
+        <span class="app-icon-label">Carte</span>
+      </button>
+
+      <!-- App : Musique (Spotify) -->
+      <button class="app-icon" data-view="music" role="listitem"
+              aria-label="Ouvrir la musique" title="Musique">
+        <div class="squircle" data-app="music">
+          <i data-feather="music"></i>
+        </div>
+        <span class="app-icon-label">Musique</span>
+      </button>
+
+      <div class="sidebar-divider" role="separator"></div>
+
+      <!-- App : À propos -->
+      <button class="app-icon" data-view="about" role="listitem"
+              aria-label="À propos" title="À propos">
+        <div class="squircle" data-app="about">
+          <i data-feather="info"></i>
+        </div>
+        <span class="app-icon-label">À propos</span>
+      </button>
+
+    </div><!-- /#app-list -->
+
+    <!-- Boutons du bas -->
+    <div id="sidebar-bottom">
+      <!-- Plein écran -->
+      <button id="btn-fullscreen" class="sidebar-btn"
+              aria-label="Basculer en plein écran" title="Plein écran">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
+      <!-- Accueil (retour à la carte) -->
+      <button id="btn-home" class="sidebar-btn"
+              aria-label="Accueil — retour à la carte" title="Accueil">
+        <i data-feather="home"></i>
+      </button>
+    </div>
+
+  </nav><!-- /#sidebar -->
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       ZONE DE CONTENU PRINCIPAL
+  ══════════════════════════════════════════════════════════════════════ -->
+  <main id="content">
+
+    <!-- ── Vue : Carte (Maps) ────────────────────────────────────────────── -->
+    <section id="view-maps" class="app-view" aria-label="Carte">
+      <!-- Placeholder si clé API absente -->
+      <div id="maps-placeholder" style="display:none;">
+        <div class="placeholder-icon">
+          <i data-feather="map"></i>
+        </div>
+        <h2>Carte non configurée</h2>
+        <p>
+          Ajoutez votre clé Google Maps dans <code>config.js</code>
+          (variable <code>GOOGLE_MAPS_API_KEY</code>).<br/>
+          La clé est <strong>gratuite</strong> pour l'Embed API.
+          Obtenez-en une sur
+          <a href="https://console.cloud.google.com/" target="_blank" rel="noopener"
+             style="color:var(--accent)">console.cloud.google.com</a>
+          et activez l'API <em>"Maps Embed API"</em>.
+        </p>
+      </div>
+
+      <!-- Conteneur iframe -->
+      <div id="maps-iframe-wrapper">
+        <iframe id="maps-iframe"
+                title="Carte Google Maps"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                style="display:none;">
+        </iframe>
+      </div>
+    </section>
+
+    <!-- ── Vue : Musique (Spotify) ───────────────────────────────────────── -->
+    <section id="view-music" class="app-view" aria-label="Musique">
+
+      <!-- Message si SPOTIFY_CLIENT_ID non configuré -->
+      <div id="spotify-no-config" style="display:none;">
+        <div class="sicon"><i data-feather="music"></i></div>
+        <h2>Spotify non configuré</h2>
+        <p>
+          Ajoutez votre <code>SPOTIFY_CLIENT_ID</code> dans <code>config.js</code>
+          et déclarez l'URI de redirection dans votre
+          <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener"
+             style="color:#1db954">dashboard développeur Spotify</a>.
+        </p>
+      </div>
+
+      <!-- Zone de connexion (utilisateur non connecté ou compte gratuit) -->
+      <div id="spotify-connect-area" style="display:none;">
+        <div class="spotify-logo-area">
+          <div class="sicon"><i data-feather="headphones"></i></div>
+          <h2>Musique</h2>
+        </div>
+        <p>
+          Connectez votre compte Spotify pour profiter de la lecture complète
+          (compte <strong>Premium</strong> requis pour le contrôle de lecture).
+        </p>
+        <button id="btn-spotify-login" class="btn-spotify-login">
+          <i data-feather="log-in"></i>
+          Se connecter à Spotify
+        </button>
+
+        <!-- Embed de démonstration (aperçu 30s, sans connexion) -->
+        <div id="spotify-embed-wrapper" style="display:none; width:100%; max-width:680px;">
+          <iframe id="spotify-embed"
+                  title="Aperçu Spotify"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Lecteur complet (mode Premium) -->
+      <div id="player-card" style="display:none; position:relative;">
+
+        <!-- Bouton déconnexion -->
+        <button id="btn-spotify-logout" aria-label="Se déconnecter de Spotify">
+          <i data-feather="log-out"></i>
+          Déconnexion
+        </button>
+
+        <!-- Bannière "Now Playing" -->
+        <div id="player-banner">
+          <img id="album-art" src="" alt="Pochette de l'album" style="display:none;" />
+          <div id="album-art-placeholder">
+            <i data-feather="music"></i>
+          </div>
+          <div class="track-info">
+            <div id="track-name">Aucune piste</div>
+            <div id="artist-name">—</div>
+            <div id="album-name"></div>
+          </div>
+        </div>
+
+        <!-- Barre de progression -->
+        <div id="progress-section">
+          <div id="progress-bar-wrapper" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <div id="progress-bar-fill" style="width:0%"></div>
+          </div>
+          <div class="progress-times">
+            <span id="time-elapsed">0:00</span>
+            <span id="time-duration">0:00</span>
+          </div>
+        </div>
+
+        <!-- Contrôles -->
+        <div id="player-controls">
+          <!-- Piste précédente -->
+          <button id="btn-prev" class="ctrl-btn secondary" aria-label="Piste précédente">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 width="22" height="22">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+              <line x1="5" y1="19" x2="5" y2="5"></line>
+            </svg>
+          </button>
+
+          <!-- Play / Pause -->
+          <button id="btn-play-pause" class="ctrl-btn" aria-label="Lecture / Pause">
+            <!-- Icône injectée dynamiquement par spotify.js -->
+            <svg viewBox="0 0 24 24" fill="white" stroke="none" width="30" height="30">
+              <polygon points="5,3 19,12 5,21" fill="white"></polygon>
+            </svg>
+          </button>
+
+          <!-- Piste suivante -->
+          <button id="btn-next" class="ctrl-btn secondary" aria-label="Piste suivante">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                 width="22" height="22">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+              <line x1="19" y1="5" x2="19" y2="19"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Volume -->
+        <div class="volume-row">
+          <i data-feather="volume"></i>
+          <input id="volume-slider" type="range" min="0" max="100" value="80"
+                 aria-label="Volume" />
+          <i data-feather="volume-2"></i>
+        </div>
+
+      </div><!-- /#player-card -->
+
+    </section><!-- /#view-music -->
+
+    <!-- ── Vue : À propos ────────────────────────────────────────────────── -->
+    <section id="view-about" class="app-view" aria-label="À propos">
+      <div class="about-card">
+        <h2 data-product-name>AutoDeck</h2>
+        <div class="version">Version 1.0 — Interface automobile web</div>
+
+        <p>
+          Interface automobile web inspirée du style visuel des interfaces
+          embarquées modernes. Affichage plein écran en mode paysage, optimisé
+          pour tablettes et PC.
+        </p>
+
+        <p>
+          Fonctionnalités : carte Google Maps (Embed API, gratuite) et
+          lecteur Spotify (Web Playback SDK, compte Premium requis).
+        </p>
+
+        <div class="attribution-block">
+          <h3>Crédits icônes</h3>
+          <p>
+            Icônes <strong>Feather Icons</strong> par
+            <a href="https://github.com/feathericons/feather" target="_blank" rel="noopener">
+              Cole Bemis
+            </a>
+            — licence MIT. Voir <code>LICENSE-feather.txt</code>.
+          </p>
+        </div>
+
+        <div class="attribution-block" style="margin-top:10px;">
+          <h3>Configuration</h3>
+          <p>
+            Personnalisez le nom du produit, la clé Google Maps et les
+            identifiants Spotify dans le fichier <code>config.js</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /#content -->
+
+</div><!-- /#app -->
+
+<!-- ── Scripts (config en premier, puis modules) ───────────────────────────── -->
+<script src="config.js"></script>
+<script src="js/router.js"></script>
+<script src="js/spotify-auth.js"></script>
+<script src="js/maps.js"></script>
+<script src="js/spotify.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Activation des icônes Feather après le DOM -->
+<script>
+  // feather.replace() transforme les <i data-feather="..."> en SVG inline
+  if (typeof feather !== "undefined") {
+    feather.replace({ "stroke-width": 2, "class": "" });
+  }
+</script>
+
+</body>
+</html>

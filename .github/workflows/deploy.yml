@@ -1,0 +1,44 @@
+name: Déploiement FTP
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Déployer via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code source
+        uses: actions/checkout@v4
+        with:
+          # Récupérer tout l'historique pour les déploiements différentiels
+          fetch-depth: 2
+
+      - name: Déployer via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          # ── Serveur FTP ──────────────────────────────────────────────────
+          # Configurez ces secrets dans :
+          # Settings > Secrets and variables > Actions
+          server:   ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+
+          # Répertoire de destination sur le serveur FTP
+          server-dir: /public_html/
+
+          # Protocole (ftps = FTP avec TLS, recommandé)
+          protocol: ftps
+
+          # ── Exclusions ───────────────────────────────────────────────────
+          # Fichiers à NE PAS envoyer sur le serveur
+          exclude: |
+            **/.git/**
+            **/.github/**
+            **/node_modules/**
+            README.md
+            .gitignore
+            **/*.log
