@@ -2,6 +2,8 @@ import { Composition, Folder } from "remotion";
 import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
+import { TalkieWalkie } from "./TalkieWalkie";
+import { FPS, TOTAL_DURATION } from "./TalkieWalkie/theme";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -50,7 +52,14 @@ export const RemotionRoot: React.FC = () => {
           titleColor: "#000000",
         }}
       />
-
+      <Composition
+        id="TalkieWalkie"
+        component={TalkieWalkie}
+        durationInFrames={TOTAL_DURATION}
+        fps={FPS}
+        width={1920}
+        height={1080}
+      />
     </>
   );
 };
